@@ -1,4 +1,4 @@
-﻿################
+################
 # WLAN Manager #
 ################
 #Version: 2015-05-07
@@ -8,8 +8,9 @@
 ## Updated by JENS CHRISTENS - jens.christens@live.com
 
 ## Changelog:
-## - Fixed WLANAdapters WMI Query
-## - Fixed WLANAdapters Disable Issues (With Wifi MiniPort)
+## - Fixed create Schedule Task issue (Exception calling "GetTask" with "1" argument(s): "The system cannot find the file specified. (Exception from HRESULT: 0x80070002)
+## - Updated WLANAdapters WMI Query
+## - Updated WLANAdapters Disable Issues (With Wifi MiniPort)
 ## - Updated Write-Hosts for Write-Outputs
 ## - Added some troubleshooting hints
 

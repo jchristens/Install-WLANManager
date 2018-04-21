@@ -1,20 +1,30 @@
+<#
 ################
 # WLAN Manager #
 ################
-#Version: 2015-05-07
-#Author: johan.carlsson@innovatum.se , http://www.innovatum.se/personer/johan-carlsson
 
-## Version 12/03/2018
-## Updated by JENS CHRISTENS - jens.christens@live.com
+.GUID
+3bd70a15-a02e-491f-b117-0bbabf89fc4f
 
-## Changelog:
-## - Fixed create Schedule Task issue (Exception calling "GetTask" with "1" argument(s): "The system cannot find the file specified. (Exception from HRESULT: 0x80070002)
-## - Updated WLANAdapters WMI Query
-## - Updated WLANAdapters Disable Issues (With Wifi MiniPort)
-## - Updated Write-Hosts for Write-Outputs
-## - Added some troubleshooting hints
+.VERSION
+2015-05-07
 
-<#
+.AUTHOR 
+johan.carlsson@innovatum.se
+http://www.innovatum.se/personer/johan-carlsson
+
+.UPDATE
+12/03/2018
+Updated by JENS CHRISTENS
+jens.christens@live.com
+
+.CHANGELOG
+- Fixed create Schedule Task issue (Exception calling "GetTask" with "1" argument(s): "The system cannot find the file specified. (Exception from HRESULT: 0x80070002)
+- Updated WLANAdapters WMI Query
+- Updated WLANAdapters Disable Issues (With Wifi MiniPort)
+- Updated Write-Hosts for Write-Outputs
+- Added some troubleshooting hints
+- Fixed the Win8 identification
 
 .SYNOPSIS
 Disables the WLAN NIC when LAN NIC network connection is verified.
@@ -88,56 +98,54 @@ Param
 )
 
 
-#########################################
-# Custom Variables for Your Environment #
-#########################################
-#Destination Path to where you want to store files for local install of WLAN Manager when installing for: System
-$SystemDestinationPath = "$env:ProgramFiles\WLANManager"
-#Registry destination path for writing version information to the registry when installing for: System
-$SystemVersionRegPath = "HKLM:\SOFTWARE\WLAN Manager"
-#Destination Path to where you want to store files for local install of WLAN Manager when installing for: User
-$UserDestinationPath = "$env:LOCALAPPDATA\WLANManager"
-#Registry destination path for writing version information to the registry when installing for: User
-$UserVersionRegPath = "HKCU:\SOFTWARE\WLAN Manager"
 
+## Custom Variables for Your Environment 
+## Destination Path to where you want to store files for local install of WLAN Manager when installing for: System
+$SystemDestinationPath = "$env:ProgramFiles\WLANManager"
+
+## Registry destination path for writing version information to the registry when installing for: System
+$SystemVersionRegPath = "HKLM:\SOFTWARE\WLAN Manager"
+
+## Destination Path to where you want to store files for local install of WLAN Manager when installing for: User
+$UserDestinationPath = "$env:LOCALAPPDATA\WLANManager"
+
+## Registry destination path for writing version information to the registry when installing for: User
+$UserVersionRegPath = "HKCU:\SOFTWARE\WLAN Manager"
 
 <#
 D O   N O T   C H A N G E   A N Y T H I N G   B E L O W   T H I S   L I N E
 #>
 
 
-#######################################################
-# Change cmdlet parameters scope from Local to Global #
-#######################################################
+## Change cmdlet parameters scope from Local to Global #
+
 Set-Variable -Name Install -Value $Install -Scope Global -Force
 Set-Variable -Name Remove -Value $Remove -Scope Global -Force
 Set-Variable -Name ReleaseDHCPLease -Value $ReleaseDHCPLease -Scope Global -Force
 Set-Variable -Name BalloonTip -Value $BalloonTip -Scope Global -Force
 
 
-#################################
-# Unload/Load PowerShell Module #
-#################################
 
-#Remove PowerShell Module
+## Unload/Load PowerShell Module
+
+## Remove PowerShell Module
 If ((Get-Module PSModule-WLANManager) -ne $null)
     {
         Remove-Module PSModule-WLANManager -Verbose
     }
 
-#Import PowerShell Module
+## Import PowerShell Module
 $strBasePath = Split-Path -Parent $MyInvocation.MyCommand.Definition
 Import-Module "$strBasePath\PSModule-WLANManager.psm1" -Verbose
 
 
-#####################
-# Install or Remove #
-#####################
 
-#Version
+## Install or Remove 
+
+## Version
 $Global:Version = "2015-05-07"
 
-#Set correct Destination and VersionRegPath
+## Set correct Destination and VersionRegPath
 If ($Install -eq "System" -and $BalloonTip -eq $true)
     {
         Write-Error -Message "Parameter '-ShowBalloonTip:`$true' is ONLY valid when installing for USER." -Category InvalidArgument -ErrorAction Stop
@@ -153,14 +161,14 @@ ElseIf ($Install -eq "User" -or $Remove -eq "User")
         $Global:VersionRegPath = $UserVersionRegPath
     }
 
-#Install
+## Install
 If ($Install -ne "")
     {
         #Install
         Install-WLANManager -SourcePath $strBasePath -DestinationPath $CustomDestinationPath
         Return
     }
-#Remove
+## Remove
 ElseIf ($Remove -ne "")
     {
         Remove-WLANManager -FilePath $CustomDestinationPath
@@ -168,9 +176,7 @@ ElseIf ($Remove -ne "")
     }
 
 
-########
-# Main #
-########
+## Main 
 
 while ($true)
 {
@@ -180,21 +186,21 @@ while ($true)
             If ($BalloonTip -eq $true)
                 {
                     Show-BalloonTip -Text "Wired connection detected, disabling Wireless connection." -Title "WLAN Manager" -Icon Info
-                }
+                }#Enf if balloontip eq true
             If ($ReleaseDHCPLease -eq $true)
                 {
                     Remove-DHCPLease
-                }
-            #≥Windows 8
+                }#End if releasedhcp eq true
+            ## >=Windows 8
             If ($Win8orGreater)
                 {
                     $WLANAdapters = Get-NetAdapter -InterfaceDescription *Wireless*,*WiFi*
                     foreach ($WLANAdapter in $WLANAdapters)
                         {
                             Disable-NetAdapter -Name $WLANAdapter.Name -IncludeHidden -Confirm:$False
-                        }
-                }
-            #<Windows 8
+                        }#End foreach
+                }#End if win8orgreater
+            ## <Windows 8
             Else
                 {
                     Disable-WLANAdapters | Out-Null
@@ -203,9 +209,9 @@ while ($true)
             while ((Test-WiredConnection) -eq $true -and (Test-WirelessConnection) -eq $true)
                 {
                     sleep -Seconds 1
-                }
+                }#End while
             Write-Host "Done" -ForegroundColor White -BackgroundColor Green
-        }
+        }#End if test-wired and test-wireless eq true
 
     ElseIf ((Test-WiredConnection) -eq $false -and (Test-WirelessConnection) -eq $false)
         {
@@ -214,31 +220,31 @@ while ($true)
                 {
                     Show-BalloonTip -Text "Wired connection lost, enabling Wireless connection." -Title "WLAN Manager" -Icon Info
                 }
-            #≥Windows 8
+            #>=Windows 8
             If ($Win8orGreater)
                 {
                     $WLANAdapters = Get-NetAdapter -InterfaceDescription *Wireless*,*WiFi*
                     foreach ($WLANAdapter in $WLANAdapters)
                         {
                             Enable-NetAdapter -Name $WLANAdapter.Name -IncludeHidden -Confirm:$False
-                        }
-                }
+                        }#End foreach
+                }#End if win8orgreater
             #<Windows 8
             Else
                 {
                     Enable-WLANAdapters | Out-Null
-                }
+                }#End else
             #Wait for WLAN Adapter to initialize and obtain an IP-address
             while ((Test-WiredConnection) -eq $false -and (Test-WirelessConnection) -eq $false)
                 {
                     sleep -Seconds 1
-                }
+                }#End while
             Write-Host "Done" -ForegroundColor White -BackgroundColor Green
-        }
+        }#End elseif test-wired and test-wireless eq false
 
     Else
         {
             Write-Host "Sleeping..." -ForegroundColor Yellow
             sleep -Seconds 1
-        }
-}
+        }#End else
+}#End while

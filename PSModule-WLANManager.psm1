@@ -228,22 +228,21 @@ Write-Output "VersionRegPath: $VersionRegPath"
 
     Else
         {
-        Write-Output "Taskname: $TaskName"
-            If ((Get-STask -TaskName "$TaskName" -ErrorAction Continue) -like "Not created.")
-                {
+            try {
+                (Get-STask -TaskName "$TaskName" -ErrorAction stop)
+                }#End try
+                catch 
+                    {
                     Write-Output "Missing"
                     Write-Output "Installing WLAN Manager Scheduled Task... " 
                     New-STask -TaskName "$TaskName" -TaskCommand "C:\Windows\System32\WindowsPowerShell\v1.0\PowerShell.exe" -TaskArguments "-WindowStyle Hidden -NonInteractive -Executionpolicy Unrestricted -Command ""& """"$DestinationPath\WLANManager.ps1"""""" -ReleaseDHCPLease:`$$ReleaseDHCPLease -BalloonTip:`$$BalloonTip""" -TaskRunAt $TaskRunAt -TaskRunAs $TaskRunAs -TaskRunLevel $TaskRunLevel| Out-Null
                     #New-STask -TaskName "$TaskName" -TaskCommand "C:\Windows\System32\WindowsPowerShell\v1.0\PowerShell.exe" -TaskScript "$DestinationPath\WLANManager.ps1" -TaskArguments "-WindowStyle Hidden -NonInteractive -Executionpolicy unrestricted -file ""$DestinationPath\WLANManager.ps1 -BalloonTip:`$$BalloonTip""" | Out-Null
                     Start-STask -TaskName "$TaskName" | Out-Null
                     Write-Output "Done"
-                }#End if get-stask not created
-            Else
-                {
+                    } #End catch
                     Write-Output "Installed"
-                }#End else
+
         }#End else win8 or greater
-}
 
 
 ## Function: Remove-WLANManager

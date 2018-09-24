@@ -7,18 +7,22 @@
 3bd70a15-a02e-491f-b117-0bbabf89fc4f
 
 .VERSION
-2015-05-07
+2018-09-24
 
 .AUTHOR 
 johan.carlsson@innovatum.se
 http://www.innovatum.se/personer/johan-carlsson
 
 .UPDATE
-12/03/2018
+24/09/2018
 Updated by JENS CHRISTENS
 jens.christens@live.com
 
 .CHANGELOG
+September 2018
+- Fixed the Win10 error when first installing SchTask. (No MSFT_ScheduledTask objects found with property 'TaskName' equal to 'WLANManager') 
+
+March 2018
 - Fixed create Schedule Task issue (Exception calling "GetTask" with "1" argument(s): "The system cannot find the file specified. (Exception from HRESULT: 0x80070002)
 - Updated WLANAdapters WMI Query
 - Updated WLANAdapters Disable Issues (With Wifi MiniPort)

@@ -7,18 +7,22 @@
 b53c75e4-3ef4-418a-9405-7537942afbb6
 
 .VERSION
-2015-05-07
+2018-09-24
 
 .AUTHOR 
 johan.carlsson@innovatum.se
 http://www.innovatum.se/personer/johan-carlsson
 
 .UPDATE
-12/03/2018
+24/09/2018
 Updated by JENS CHRISTENS
 jens.christens@live.com
 
 .CHANGELOG
+September 2018
+- Fixed the Win10 error when first installing SchTask. (No MSFT_ScheduledTask objects found with property 'TaskName' equal to 'WLANManager') 
+
+March 2018
 - Fixed create Schedule Task issue (Exception calling "GetTask" with "1" argument(s): "The system cannot find the file specified. (Exception from HRESULT: 0x80070002)
 - Updated WLANAdapters WMI Query
 - Updated WLANAdapters Disable Issues (With Wifi MiniPort)
@@ -203,8 +207,12 @@ Write-Output "VersionRegPath: $VersionRegPath"
 
     If ($Win8orGreater)
         {
-            If ((Get-ScheduledTask -TaskName "$TaskName" -ErrorAction Continue) -like "Not created.")
-                {
+            try 
+                { 
+                    (Get-ScheduledTask -TaskName "$TaskName" -ErrorAction Stop) 
+                }#end try
+                catch 
+                    {
                     Write-Output "Missing"
                     Write-Output "Installing WLAN Manager Scheduled Task... " 
                     #$Trigger = New-ScheduledTaskTrigger -AtStartup
@@ -213,11 +221,8 @@ Write-Output "VersionRegPath: $VersionRegPath"
                     Register-ScheduledTask -TaskName "$TaskName" -Trigger $Trigger -User $User –Action $Action -Settings $Settings -RunLevel Highest | Out-Null
                     Start-ScheduledTask -TaskName "$TaskName"
                     Write-Output "Done"
-                }#End if get schtask not created
-            Else
-                {
+                    } #end catch
                     Write-Output "Installed"
-                }#End else
         }#End if win8orgreater
     ## <Windows 8
 

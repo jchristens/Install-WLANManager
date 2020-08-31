@@ -18,4 +18,6 @@ March 2018
 - Added some troubleshooting hints
 - Fixed the Win8 identification
 
-
+AUG 2020
+- Due to UNICODE pasting you'll get quote ("") errors on copy paste - please refer to ChrisGoding his fork and modifications.
+https://github.com/chrisgoding/Install-WLANManager

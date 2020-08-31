@@ -21,6 +21,6 @@ March 2018
 - Fixed the Win8 identification
 
 AUG 2020
-- Removed UNICDE errors
+- Removed UNICDOE quotation errors
 - Please refer to ChrisGoding his fork for modifications.
 https://github.com/chrisgoding/Install-WLANManager
